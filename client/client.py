@@ -1,4 +1,30 @@
 import requests
+import getpass
+
+un = ""
+logged_in = False
+
+
+def register(username, password, first_name, last_name, email):
+    url = 'http://app:5000/register?username=' + username + \
+          '&password=' + password + \
+          '&firstName=' + first_name + \
+          '&lastName=' + last_name + \
+          '&email=' + email
+    request = requests.get(url)
+    print(request.text)
+
+
+def login(username, password):
+    url = 'http://app:5000/login?username=' + username + \
+          '&password=' + password
+    request = requests.get(url)
+    print(request.text)
+
+
+def logout():
+    print("todo")
+
 
 if __name__ == '__main__':
     command_manual = 'Please choose one of the following commands: \n' \
@@ -17,11 +43,22 @@ if __name__ == '__main__':
             break
 
         elif command == 1:
-            print("TODO: register\n")
+            first_name = input("First name:")
+            last_name = input("Last name:")
+            email = input("Email:")
+            username = input("Username:")
+            password = getpass.getpass("Password:")
+
+            register(username, password, first_name, last_name, email)
 
         elif command == 2:
-            print("TODO: login\n")
+            username = input("Username:")
+            password = getpass.getpass("Password:")
+
+            login(username, password)
+
+            if logged_in:
+                break
 
         else:
             print("Incorrect command, please try again.\n")
-
