@@ -43,12 +43,24 @@ def login(username, password):
     return True
 
 
-def request_suggestion(options):
-    print("TODO")
+def request_suggestion(option1, option2):
+    url = 'http://app:5000/get_suggestion?option1=' + option1 +'&option2=' + option2
+    request = requests.get(url)
+    code, message = parse_response(request.text)
+
+    print(message)
 
 
-def add_book(title, author, genre):
-    print("TODO")
+def add_book(title, author, genre, nationality):
+    url = 'http://app:5000/add_book?title=' + title \
+          + '&author=' + author \
+          + '&genre=' + genre \
+          + '&nationality=' + nationality \
+          + '&username=' + un
+    request = requests.get(url)
+    code, message = parse_response(request.text)
+
+    print(message)
 
 
 def logout(username):
@@ -120,18 +132,28 @@ def main():
             title = input("Title:")
             author = input("Author:")
             genre = input("Genre:")
+            nationality = input("Nationality of the author:")
 
-            add_book(title, author, genre)
+            add_book(title, author, genre, nationality)
 
         elif command == 2:
             options = 'Would you like to select a criteria?\n' \
                       '0 - None\n' \
                       '1 - Popularity\n' \
                       '2 - Author\n' \
-                      '3 - Genre\n'
-            option = input(options)
+                      '3 - Genre\n' \
+                      '4 - Nationality of the author'
+            option1= int(input(options))
+            option2 = ""
 
-            request_suggestion(option)
+            if option1 == 2:
+                option2 = input("Please specify the author: ")
+            elif option1 == 3:
+                option2 = input("Please specify the genre: ")
+            elif option1 == 4:
+                option2 = input("Please specify the nationality of the author: ")
+
+            request_suggestion(option1, option2)
 
         else:
             print("Incorrect command, please try again.\n")

@@ -14,6 +14,10 @@ email varchar(200) NOT NULL
 ALTER TABLE users ADD PRIMARY KEY (id);
 
 
+INSERT INTO users (id, username, password, firstName, lastName, email) VALUES
+(1, 'student', 'student', 'Student', 'Student', 'student@stud.acs.pub.ro');
+
+
 -- Users registration requests
 CREATE TABLE registrationRequests (
 id int NOT NULL,
@@ -95,6 +99,19 @@ INSERT INTO authors (id, name, nationality) VALUES
 (7, 'J. R. R. Tolkien', 'British');
 
 
+CREATE TABLE authorRecommendations (
+id int NOT NULL,
+name varchar(50) NOT NULL,
+nationality varchar(30) NOT NULL
+);
+
+ALTER TABLE authorRecommendations ADD PRIMARY KEY (id);
+
+INSERT INTO authorRecommendations (id, name, nationality) VALUES
+(1, 'Mo Yan', 'Chinese'),
+(2, 'Yasunari Kawabata', 'Japanese');
+
+
 -- Genres evidence
 CREATE TABLE genres (
 id int NOT NULL,
@@ -104,11 +121,24 @@ name varchar(50) NOT NULL
 ALTER TABLE genres ADD PRIMARY KEY(id);
 
 INSERT INTO genres (id, name) VALUES
-(1, 'fantasy'),
+(1, 'Fantasy'),
 (2, 'SF'),
 (3, 'Adventure'),
 (4, 'Drama'),
 (5, 'Romance');
+
+
+CREATE TABLE genreRecommendations (
+id int NOT NULL,
+name varchar(50) NOT NULL
+);
+
+ALTER TABLE genreRecommendations ADD PRIMARY KEY(id);
+
+INSERT INTO genreRecommendations (id, name) VALUES
+(1, 'Thriller'),
+(2, 'Western'),
+(3, 'Memoir');
 
 
 -- Reads evidence
