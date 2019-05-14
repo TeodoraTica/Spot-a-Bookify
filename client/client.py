@@ -63,10 +63,19 @@ def add_book(title, author, genre, nationality):
     print(message)
 
 
+def get_reads():
+    url = 'http://app:5000/get_reads?username=' + un
+    request = requests.get(url)
+    code, message = parse_response(request.text)
+
+    print(message)
+
+
 def logout(username):
     url = 'http://app:5000/logout?username=' + username
     request = requests.get(url)
-    print(request.text)
+    code, message = parse_response(request.text)
+    print(message)
 
 
 def main():
@@ -80,7 +89,8 @@ def main():
     home_command_manual = 'Please choose one of the following commands: \n' \
                           '0 - Logout\n' \
                           '1 - Add a book\n' \
-                          '2 - Get suggestion\n'
+                          '2 - Get suggestion\n' \
+                          '3 - See your previous reads\n'
 
     command = int(input(command_manual))
     while True:
@@ -154,6 +164,9 @@ def main():
                 option2 = input("Please specify the nationality of the author: ")
 
             request_suggestion(option1, option2)
+
+        elif command == 3:
+            get_reads()
 
         else:
             print("Incorrect command, please try again.\n")

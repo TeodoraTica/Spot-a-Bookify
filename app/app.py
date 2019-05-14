@@ -99,7 +99,7 @@ def username_exists(username):
 
 
 def book_to_string(book):
-    return "\"" + book.title + "\" by  " + authors_dict[book.author] + ", " + genres_dict[book.genre] + "\n"
+    return "\"" + book.title + "\" by " + authors_dict[book.author] + ", " + genres_dict[book.genre] + "\n"
 
 
 def get_table_size(table_name):
@@ -410,6 +410,31 @@ def add_book() -> str:
         add_book_recommendation(title, author_id, genre_id)
         return '2-Thanks for your suggestions! We did not know about this book yet, but we will ' \
                'add it to our data base'
+
+    return message
+
+
+@app.route('/get_reads')
+def get_reads() -> str:
+    username = request.args.get('username', type=str, default="")
+
+    set_up()
+    books = get_books()
+
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
+
+    user_id = get_user_id(username)
+    message = '0-'
+
+    cursor.execute(f'SELECT * FROM readsEvidence WHERE idReader={user_id}')
+    for (_, book_id) in cursor:
+        for book in books:
+            if book.id == book_id:
+                message += book_to_string(book)
+
+    cursor.close()
+    connection.close()
 
     return message
 
