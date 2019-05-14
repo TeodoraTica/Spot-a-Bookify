@@ -37,14 +37,14 @@ def login(username, password):
     code, message = parse_response(request.text)
     print(message)
 
-    if code != 2:
+    if code != 2 and code != 1:
         return False
 
     return True
 
 
 def request_suggestion(option1, option2):
-    url = 'http://app:5000/get_suggestion?option1=' + option1 +'&option2=' + option2
+    url = 'http://app:5000/get_suggestion?option1=' + str(option1) +'&option2=' + option2
     request = requests.get(url)
     code, message = parse_response(request.text)
 
@@ -88,11 +88,11 @@ def main():
             break
 
         elif command == 1:
-            first_name = input("First name:")
-            last_name = input("Last name:")
-            email = input("Email:")
+            first_name = input("First name: ")
+            last_name = input("Last name: ")
+            email = input("Email: ")
             username = input("Username:")
-            password = getpass.getpass("Password:")
+            password = getpass.getpass("Password: ")
 
             success = register(username, password, first_name, last_name, email)
 
@@ -129,10 +129,10 @@ def main():
                 logged_in = False
             break
         elif command == 1:
-            title = input("Title:")
-            author = input("Author:")
-            genre = input("Genre:")
-            nationality = input("Nationality of the author:")
+            title = input("Title: ")
+            author = input("Author: ")
+            genre = input("Genre: ")
+            nationality = input("Nationality of the author: ")
 
             add_book(title, author, genre, nationality)
 
@@ -142,7 +142,7 @@ def main():
                       '1 - Popularity\n' \
                       '2 - Author\n' \
                       '3 - Genre\n' \
-                      '4 - Nationality of the author'
+                      '4 - Nationality of the author\n'
             option1= int(input(options))
             option2 = ""
 

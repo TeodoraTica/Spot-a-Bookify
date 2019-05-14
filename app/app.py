@@ -26,6 +26,11 @@ authors_dict = {}
 genres_dict = {}
 
 
+def strip_symbols(s):
+    s = ''.join(c for c in s if c.isalpha())
+    return s.lower()
+
+
 def set_up():
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
@@ -45,7 +50,7 @@ def set_up():
 def get_author_id(author):
     author_id = -1
     for k, v in authors_dict.items():
-        if v == author:
+        if strip_symbols(author) in strip_symbols(v):
             author_id = k
             return author_id
 
@@ -55,10 +60,11 @@ def get_author_id(author):
 def get_genre_id(genre):
     genre_id = -1
     for k, v in genres_dict.items():
-        if v == genre:
+        if strip_symbols(genre) == strip_symbols(v):
             genre_id = k
             return genre_id
     return genre_id
+
 
 def get_user_id(username):
     connection = mysql.connector.connect(**config)
@@ -78,7 +84,9 @@ def get_user_id(username):
 def get_book_id(title, author, genre):
     books = get_books()
     for book in books:
-        if book.title == title and book.author == author and book.genre == genre:
+        if strip_symbols(book.title) == strip_symbols(title) \
+                and strip_symbols(author) in strip_symbols(book.author) \
+                and strip_symbols(book.genre) == strip_symbols(genre):
             return book.id
     return -1
 
@@ -91,7 +99,7 @@ def username_exists(username):
 
 
 def book_to_string(book):
-    return "\"" + book.title + "\" by  " + authors_dict[book.author] + " - " + genres_dict[book.genre] + "\n"
+    return "\"" + book.title + "\" by  " + authors_dict[book.author] + ", " + genres_dict[book.genre] + "\n"
 
 
 def get_table_size(table_name):
@@ -126,11 +134,14 @@ def get_books() -> List[Book]:
     return books
 
 
-def get_distribution_by_popularity():
+def get_distribution_by_popularity(books):
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
     read_counts = {}
     total_reads = 0
+
+    for book in books:
+        read_counts[book.id] = 0
 
     cursor.execute('SELECT * FROM readsEvidence')
     for (reader_id, book_id) in cursor:
@@ -140,7 +151,15 @@ def get_distribution_by_popularity():
     cursor.close()
     connection.close()
 
-    return list(map(lambda r: r / total_reads, read_counts))
+    reads = []
+    for book in books:
+        reads.append(read_counts[book.id])
+
+    if total_reads == 0:
+        reads[numpy.random.choice(len(reads))] = 1
+        total_reads = 1
+
+    return list(map(lambda r: r / total_reads, reads))
 
 
 def get_distribution_by_author(books, author):
@@ -343,15 +362,18 @@ def get_suggestion() -> str:
     books = get_books()
 
     if option1 == 0:
-        suggestion = numpy.random.choice(books)
+        suggestion = books[numpy.random.choice(len(books))]
     elif option1 == 1:
-        suggestion = numpy.random.choice(books, p=get_distribution_by_popularity())
+        suggestion = books[numpy.random.choice(len(books), p=get_distribution_by_popularity(books))]
     elif option1 == 2:
-        suggestion = numpy.random.choice(get_distribution_by_author(books, option2))
+        books_by_author = get_distribution_by_author(books, option2)
+        suggestion = books_by_author[numpy.random.choice(len(books_by_author))]
     elif option1 == 3:
-        suggestion = numpy.random.choice(get_distribution_by_genre(books, option2))
+        books_by_genre = get_distribution_by_genre(books, option2)
+        suggestion = books_by_genre[numpy.random.choice(len(books_by_genre))]
     elif option1 == 4:
-        suggestion = numpy.random.choice(get_distribution_by_country(books, option2))
+        books_by_country = get_distribution_by_country(books, option2)
+        suggestion = books_by_country[numpy.random.choice(len(books_by_country))]
 
     return f'0-Based on your previous reads, we recommend:\n{book_to_string(suggestion)}'
 
@@ -385,7 +407,7 @@ def add_book() -> str:
                   'either the author or genre. Please try again later!'
 
     if len(message) == 0:
-        add_book(title, author_id, genre_id)
+        add_book_recommendation(title, author_id, genre_id)
         return '2-Thanks for your suggestions! We did not know about this book yet, but we will ' \
                'add it to our data base'
 
@@ -394,7 +416,7 @@ def add_book() -> str:
 
 @app.route('/')
 def index() -> str:
-    return json.dumps({'books': get_books()})
+    return json.dumps({'books': get_table_size('authorRecommendations')})
 
 
 if __name__ == '__main__':

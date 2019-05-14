@@ -201,7 +201,7 @@ def accept_book_recommendations():
     recommendations = get_book_recommendations()
 
     for recommendation in recommendations:
-        response = input("Do you want to add the following book? [y/n]\n" + book_to_string(recommendation))
+        response = input("Do you want to add the following book? [y/n]\n" + book_to_string(recommendation) + ' - ')
         if response is "y":
             new_id = get_book_count() + 1
             add_book(new_id, recommendation)
@@ -212,7 +212,7 @@ def accept_author_recommendations():
     recommendations = get_author_recommendations()
 
     for old_id, author, nationality in recommendations:
-        response = input("Do you want to add the following author? [y/n]\n" + author + ', ' + nationality)
+        response = input("Do you want to add the following author? [y/n]\n" + author + ', ' + nationality + ' - ')
         if response is "y":
             new_id = get_table_size('authors') + 1
             add_author(new_id, author, nationality)
@@ -223,7 +223,7 @@ def accept_genre_recommendations():
     recommendations = get_genre_recommendations()
 
     for old_id, genre in recommendations:
-        response = input("Do you want to add the following genre? [y/n]: " + genre)
+        response = input("Do you want to add the following genre? [y/n]: " + genre + ' - ')
         if response is "y":
             new_id = get_table_size('authors') + 1
             add_genre(new_id, genre)
@@ -272,10 +272,10 @@ if __name__ == '__main__':
             accept_book_recommendations()
 
         elif command == 5:
-            accept_book_recommendations()
+            accept_author_recommendations()
 
         elif command == 6:
-            accept_book_recommendations()
+            accept_genre_recommendations()
 
         else:
             print("Incorrect command, please try again.\n")
